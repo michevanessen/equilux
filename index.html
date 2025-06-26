@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equilux - MCP Integration Consulting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'equilux-blue': '#1e40af',
+                        'equilux-light': '#3b82f6',
+                        'equilux-dark': '#1e3a8a'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .nav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .nav-dot.active {
+            background-color: #10b981;
+        }
+        .draggable {
+            cursor: move;
+            user-select: none;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        .drag-handle-collapsed {
+            cursor: grab;
+        }
+        .drag-handle-collapsed:active {
+            cursor: grabbing;
+        }
+        .drag-handle-collapsed .toggle-btn {
+            cursor: pointer;
+        }
+        .toggle-btn {
+            transition: all 0.3s ease;
+        }
+        .toggle-btn:hover {
+            background-color: rgba(55, 65, 81, 0.8);
+        }
+        #nav-collapsed .toggle-btn {
+            border-radius: 0.5rem;
+        }
+        #nav-expanded .toggle-btn {
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        #nav-collapsed, #nav-expanded {
+            min-width: 200px;
+        }
+        #nav-collapsed .toggle-btn, #nav-expanded .toggle-btn {
+            width: 200px;
+        }
+        @media (max-width: 1023px) {
+            .lg\\:pr-64 {
+                padding-right: 2rem !important;
+            }
+            .text-left {
+                text-align: center !important;
+            }
+            .md\\:justify-start {
+                justify-content: center !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Logo (Top Left) -->
+    <div class="fixed top-8 left-8 z-50">
+        <div class="flex items-center">
+            <img src="img/equilux logo.png" alt="Equilux Logo" class="h-10 w-auto">
+            <span class="ml-3 text-xl font-bold text-white">Equilux</span>
+        </div>
+    </div>
+
+    <!-- Floating Navigation Panel -->
+    <nav id="floating-nav" class="fixed top-6 right-6 z-50 block draggable transition-all duration-300">
+        <div class="floating-nav bg-gray-900 bg-opacity-90 backdrop-blur-md rounded-lg shadow-2xl border border-gray-700">
+            <!-- Collapsed State -->
+            <div id="nav-collapsed" class="hidden">
+                <div class="drag-handle-collapsed">
+                    <button id="show-nav" class="toggle-btn w-full bg-gray-200 text-gray-900 px-4 py-3 flex items-center justify-between font-semibold text-xs tracking-wide uppercase hover:bg-gray-300 transition-colors">
+                        <span class="text-left">NAVIGATION</span>
+                        <span class="text-lg font-bold text-right">+</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Expanded State -->
+            <div id="nav-expanded">
+                <div class="drag-handle">
+                    <button id="hide-nav" class="toggle-btn w-full bg-gray-200 text-gray-900 px-4 py-3 flex items-center justify-between font-semibold text-xs tracking-wide uppercase hover:bg-gray-300 transition-colors border-b border-gray-700">
+                        <span class="text-left">NAVIGATION</span>
+                        <span class="text-lg font-bold text-right">-</span>
+                    </button>
+                </div>
+                <div class="nav-content px-4 py-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between group cursor-pointer" data-section="home">
+                            <a href="#home" class="text-gray-300 hover:text-white transition-colors font-medium text-sm tracking-wide">HOME</a>
+                            <div class="nav-dot bg-gray-600 ml-4"></div>
+                        </div>
+                        <div class="flex items-center justify-between group cursor-pointer" data-section="about">
+                            <a href="#about" class="text-gray-300 hover:text-white transition-colors font-medium text-sm tracking-wide">ABOUT</a>
+                            <div class="nav-dot bg-gray-600 ml-4"></div>
+                        </div>
+                        <div class="flex items-center justify-between group cursor-pointer" data-section="services">
+                            <a href="#services" class="text-gray-300 hover:text-white transition-colors font-medium text-sm tracking-wide">SERVICES</a>
+                            <div class="nav-dot bg-gray-600 ml-4"></div>
+                        </div>
+                        <div class="flex items-center justify-between group cursor-pointer" data-section="examples">
+                            <a href="#examples" class="text-gray-300 hover:text-white transition-colors font-medium text-sm tracking-wide">EXAMPLES</a>
+                            <div class="nav-dot bg-gray-600 ml-4"></div>
+                        </div>
+                        <div class="flex items-center justify-between group cursor-pointer" data-section="contact">
+                            <a href="#contact" class="text-gray-300 hover:text-white transition-colors font-medium text-sm tracking-wide">CONTACT</a>
+                            <div class="nav-dot bg-gray-600 ml-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-button" class="fixed top-8 right-8 z-50 lg:hidden bg-gray-900 bg-opacity-90 backdrop-blur-md text-white p-3 rounded-lg shadow-lg border border-gray-700">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Mobile Navigation -->
+    <div id="mobile-menu" class="fixed inset-0 bg-gray-900 bg-opacity-95 backdrop-blur-md z-40 hidden lg:hidden">
+        <div class="flex items-center justify-center h-full">
+            <div class="text-center space-y-8">
+                <a href="#home" class="block text-white text-2xl font-medium hover:text-gray-300 transition-colors">HOME</a>
+                <a href="#about" class="block text-white text-2xl font-medium hover:text-gray-300 transition-colors">ABOUT</a>
+                <a href="#services" class="block text-white text-2xl font-medium hover:text-gray-300 transition-colors">SERVICES</a>
+                <a href="#examples" class="block text-white text-2xl font-medium hover:text-gray-300 transition-colors">EXAMPLES</a>
+                <a href="#contact" class="block text-white text-2xl font-medium hover:text-gray-300 transition-colors">CONTACT</a>
+            </div>
+        </div>
+        <button id="mobile-menu-close" class="absolute top-8 right-8 text-white">
+            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="gradient-bg min-h-screen flex items-center">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 lg:pr-64">
+            <div class="text-left text-white">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 floating-animation">
+                    Stop Switching Between Apps
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl opacity-90">
+                    Start asking your AI assistant to handle your workflows. I help small business owners save time and money with MCP-powered AI automation.
+                </p>
+                <div class="space-y-4 md:space-y-0 md:space-x-4 md:flex md:justify-start">
+                    <a href="#contact" class="inline-block bg-white text-equilux-blue px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
+                        Let Me Show You How
+                    </a>
+                    <a href="#examples" class="inline-block border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-equilux-blue transition-colors">
+                        See Examples
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">About Miche van Essen</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    I've been exactly where you are - part of a 4-person team juggling multiple tools and drowning in admin work.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">One of You</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        As someone who understands the small business journey firsthand, I speak your language, not tech jargon. 
+                        I've automated my own workflows and saved countless hours per week - now let me show you how to do the same.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-equilux-blue rounded-full flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">Show, Don't Tell</h4>
+                                <p class="text-gray-600">Live demos and transparent processes that build trust and understanding</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-equilux-blue rounded-full flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">Boutique Excellence</h4>
+                                <p class="text-gray-600">Personal practice delivering high-end results with approachable service</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-equilux-blue rounded-full flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">Practical Innovation</h4>
+                                <p class="text-gray-600">Cutting-edge AI automation that makes immediate, measurable sense</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-8">
+                    <blockquote class="text-lg text-gray-600 italic mb-4">
+                        "To eliminate the frustrating choice between drowning in manual work or hiring expensive staff, by creating AI-powered solutions that act like having a smart assistant who knows all your business tools."
+                    </blockquote>
+                    <cite class="text-equilux-blue font-semibold">Our Mission</cite>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-gray-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">MCP Integration Services</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Turn your business tools into a unified, AI-powered workflow system
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                    <div class="w-12 h-12 bg-equilux-blue rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Workflow Automation</h3>
+                    <p class="text-gray-600 mb-6">
+                        Connect your existing tools through MCP integrations. Turn meeting transcripts into organized action items, automate data entry, and eliminate repetitive tasks.
+                    </p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li>• Email to task automation</li>
+                        <li>• Meeting transcript processing</li>
+                        <li>• Cross-platform data sync</li>
+                        <li>• Custom workflow triggers</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                    <div class="w-12 h-12 bg-equilux-blue rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">AI Assistant Setup</h3>
+                    <p class="text-gray-600 mb-6">
+                        Deploy intelligent AI agents that understand your business context and can work across all your tools seamlessly, just like having a smart assistant.
+                    </p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li>• Custom AI agent training</li>
+                        <li>• Business context integration</li>
+                        <li>• Multi-tool coordination</li>
+                        <li>• Natural language interfaces</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                    <div class="w-12 h-12 bg-equilux-blue rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Performance Optimization</h3>
+                    <p class="text-gray-600 mb-6">
+                        Continuous monitoring and optimization of your automated workflows with measurable ROI tracking and performance improvements.
+                    </p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li>• Time savings analytics</li>
+                        <li>• ROI measurement</li>
+                        <li>• Workflow optimization</li>
+                        <li>• Ongoing support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="py-20 bg-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Real-World Examples</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    See how MCP integrations transform daily operations for growing businesses
+                </p>
+            </div>
+            
+            <div class="space-y-12">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">From Meeting Chaos to Action Clarity</h3>
+                        <p class="text-gray-600 mb-6">
+                            A 8-person marketing agency was drowning in follow-up tasks from client meetings. Now their AI assistant automatically transcribes meetings, extracts action items, assigns them to team members, and updates their project management system.
+                        </p>
+                        <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-800">
+                                        <strong>Result:</strong> Saved 6 hours per week of manual follow-up work
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-6">
+                        <h4 class="font-semibold text-gray-900 mb-3">Before vs After</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center text-red-600">
+                                <span class="w-2 h-2 bg-red-600 rounded-full mr-3"></span>
+                                <span class="text-sm">Manually typing meeting notes into 3 different systems</span>
+                            </div>
+                            <div class="flex items-center text-red-600">
+                                <span class="w-2 h-2 bg-red-600 rounded-full mr-3"></span>
+                                <span class="text-sm">Missing action items and deadlines</span>
+                            </div>
+                            <div class="border-t pt-3 mt-3"></div>
+                            <div class="flex items-center text-green-600">
+                                <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                                <span class="text-sm">AI processes transcript and updates all systems automatically</span>
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                                <span class="text-sm">Team members get assigned tasks with context</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-gray-100 rounded-lg p-6 md:order-2">
+                        <h4 class="font-semibold text-gray-900 mb-3">Typical Day Before & After</h4>
+                        <div class="space-y-3">
+                            <div class="text-sm">
+                                <span class="text-red-600 font-medium">Before:</span> 
+                                <span class="text-gray-600">2 hours daily switching between email, CRM, calendar, and spreadsheets</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-green-600 font-medium">After:</span> 
+                                <span class="text-gray-600">Ask AI "What needs my attention today?" and get prioritized dashboard</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:order-1">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Email Overload to Smart Prioritization</h3>
+                        <p class="text-gray-600 mb-6">
+                            A busy consultant was spending 2+ hours daily managing emails, calendar conflicts, and client follow-ups across multiple platforms. Now their AI assistant handles email triage, schedules meetings, and maintains client relationship updates automatically.
+                        </p>
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-blue-800">
+                                        <strong>Result:</strong> Reclaimed 10 hours per week for billable client work
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#contact" class="inline-block bg-equilux-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-equilux-dark transition-colors">
+                    See How This Could Work for You
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 gradient-bg">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 text-white">
+                <h2 class="text-4xl font-bold mb-4">Ready to Automate Your Workflows?</h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Let me show you exactly how MCP integrations can save you time and money. 
+                    Book a free consultation and I'll demonstrate with your actual workflows.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <div class="text-white">
+                    <h3 class="text-2xl font-bold mb-6">What You'll Get:</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold mb-1">Live Workflow Demo</h4>
+                                <p class="opacity-90">See your actual tools connected and automated in real-time</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold mb-1">Time Savings Calculation</h4>
+                                <p class="opacity-90">Quantified analysis of hours you'll save per week</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold mb-1">Custom Implementation Plan</h4>
+                                <p class="opacity-90">Roadmap tailored to your specific business needs</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold mb-1">No-Pressure Consultation</h4>
+                                <p class="opacity-90">Educational session focused on your success</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-xl p-8">
+                    <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                            <input type="text" id="name" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-equilux-blue focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-equilux-blue focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                            <input type="text" id="company" name="company" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-equilux-blue focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="team-size" class="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
+                            <select id="team-size" name="team-size" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-equilux-blue focus:border-transparent">
+                                <option value="">Select team size</option>
+                                <option value="1-3">1-3 people</option>
+                                <option value="4-10">4-10 people</option>
+                                <option value="11-25">11-25 people</option>
+                                <option value="25+">25+ people</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="challenge" class="block text-sm font-medium text-gray-700 mb-2">Biggest Time-Wasting Challenge</label>
+                            <textarea id="challenge" name="challenge" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-equilux-blue focus:border-transparent" placeholder="e.g., Spending 2 hours daily copying data between systems..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-equilux-blue text-white px-6 py-4 rounded-lg text-lg font-semibold hover:bg-equilux-dark transition-colors">
+                            Book Free Consultation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img src="img/equilux logo.png" alt="Equilux Logo" class="h-8 w-auto">
+                    <span class="ml-3 text-lg font-bold">Equilux</span>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-gray-400 mb-2">MCP Integration Consulting</p>
+                    <p class="text-gray-400">© 2024 Equilux. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenu.classList.remove('hidden');
+            });
+
+            // Mobile menu close
+            document.getElementById('mobile-menu-close').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenu.classList.add('hidden');
+            });
+
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        // Close mobile menu if open
+                        document.getElementById('mobile-menu').classList.add('hidden');
+                    }
+                });
+            });
+
+            // Active section highlighting
+            function updateActiveSection() {
+                const sections = ['home', 'about', 'services', 'examples', 'contact'];
+                const scrollPosition = window.scrollY + 100;
+
+                sections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    const navItem = document.querySelector(`[data-section="${sectionId}"] .nav-dot`);
+                    
+                    if (section && navItem) {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.offsetHeight;
+                        
+                        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                            navItem.classList.add('active');
+                        } else {
+                            navItem.classList.remove('active');
+                        }
+                    }
+                });
+            }
+
+            // Update active section on scroll
+            window.addEventListener('scroll', updateActiveSection);
+            
+            // Initialize active section on load
+            updateActiveSection();
+
+            // Draggable navigation functionality
+            let isDragging = false;
+            let dragStartX, dragStartY;
+            let navStartX, navStartY;
+            let dragThreshold = 5;
+            let initialMouseX, initialMouseY;
+            let wasJustDragged = false;
+            
+            const floatingNav = document.getElementById('floating-nav');
+            
+            // Add mousedown event to the entire nav
+            floatingNav.addEventListener('mousedown', function(e) {
+                if (e.target.tagName === 'SPAN' && (e.target.textContent === '+' || e.target.textContent === '-' || e.target.textContent === 'NAVIGATION')) {
+                    return;
+                }
+                
+                initialMouseX = e.clientX;
+                initialMouseY = e.clientY;
+                
+                const rect = floatingNav.getBoundingClientRect();
+                navStartX = rect.left;
+                navStartY = rect.top;
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                
+                e.preventDefault();
+            });
+            
+            function handleMouseMove(e) {
+                const deltaX = e.clientX - initialMouseX;
+                const deltaY = e.clientY - initialMouseY;
+                
+                if (!isDragging && (Math.abs(deltaX) > dragThreshold || Math.abs(deltaY) > dragThreshold)) {
+                    isDragging = true;
+                    floatingNav.style.transition = 'none';
+                    document.body.style.userSelect = 'none';
+                    dragStartX = initialMouseX;
+                    dragStartY = initialMouseY;
+                }
+                
+                if (isDragging) {
+                    const finalDeltaX = e.clientX - dragStartX;
+                    const finalDeltaY = e.clientY - dragStartY;
+                    
+                    let newX = navStartX + finalDeltaX;
+                    let newY = navStartY + finalDeltaY;
+                    
+                    const navRect = floatingNav.getBoundingClientRect();
+                    const maxX = window.innerWidth - navRect.width;
+                    const maxY = window.innerHeight - navRect.height;
+                    
+                    newX = Math.max(0, Math.min(newX, maxX));
+                    newY = Math.max(0, Math.min(newY, maxY));
+                    
+                    floatingNav.style.left = newX + 'px';
+                    floatingNav.style.top = newY + 'px';
+                    floatingNav.style.right = 'auto';
+                    floatingNav.style.transform = 'none';
+                }
+            }
+            
+            function handleMouseUp() {
+                if (isDragging) {
+                    isDragging = false;
+                    wasJustDragged = true;
+                    floatingNav.style.transition = 'all 0.3s ease';
+                    document.body.style.userSelect = '';
+                    
+                    setTimeout(() => {
+                        wasJustDragged = false;
+                    }, 100);
+                }
+                
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            }
+
+            // Navigation toggle functionality
+            const hideNavBtn = document.getElementById('hide-nav');
+            const showNavBtn = document.getElementById('show-nav');
+            const navExpanded = document.getElementById('nav-expanded');
+            const navCollapsed = document.getElementById('nav-collapsed');
+            
+            hideNavBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isDragging && !wasJustDragged) {
+                    navExpanded.classList.add('hidden');
+                    navCollapsed.classList.remove('hidden');
+                }
+            });
+            
+            showNavBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isDragging && !wasJustDragged) {
+                    navCollapsed.classList.add('hidden');
+                    navExpanded.classList.remove('hidden');
+                }
+            });
+
+            // Form submission handler
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Thank you for your interest! This is a demo form. In production, this would submit to your preferred contact system.');
+            });
+        });
+    </script>
+</body>
+</html>
